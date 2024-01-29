@@ -18,18 +18,13 @@ class SpeedCalculator(QWidget):
         calculate_button = QPushButton("Calculate", self)
         calculate_button.clicked.connect(self.calculate_speed)
         self.output_label = QLabel("")
-        combo = QComboBox()
-        combo.addItems(['Metric (km)', 'Imperial (miles)'])
-
-        # if combo.currentText() == 'Rice':
-        #     "do something"
-        # if combo.currentText() == 'Pasta':
-        #     "do something else"
+        self.combo = QComboBox()
+        self.combo.addItems(['Metric (km)', 'Imperial (miles)'])
 
         # add widgets to grid
         grid.addWidget(distance_label, 0, 0)
         grid.addWidget(self.distance_line_edit, 0, 1)
-        grid.addWidget(combo, 0, 2)
+        grid.addWidget(self.combo, 0, 2)
         grid.addWidget(time_label, 1, 0)
         grid.addWidget(self.time_line_edit, 1, 1)
         grid.addWidget(calculate_button, 2, 1)
@@ -38,7 +33,13 @@ class SpeedCalculator(QWidget):
         self.setLayout(grid)
 
     def calculate_speed(self):
-        pass
+        speed = float(self.distance_line_edit.text()) / float(self.time_line_edit.text())
+        unit = ""
+        if self.combo.currentText() == 'Metric (km)':
+            unit = "kmph"
+        if self.combo.currentText() == 'Imperial (miles)':
+            unit = "mph"
+        self.output_label.setText(f"Average Speed: {speed} {unit}")
 
 
 app = QApplication(sys.argv)
