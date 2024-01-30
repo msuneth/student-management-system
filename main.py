@@ -1,6 +1,8 @@
+import sqlite3
+
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import (QApplication, QVBoxLayout, QLabel, QWidget,
-                             QGridLayout, QLineEdit, QPushButton, QMainWindow, QTableWidget)
+                             QGridLayout, QLineEdit, QPushButton, QMainWindow, QTableWidget, QTableWidgetItem)
 import sys
 from datetime import datetime
 
@@ -24,13 +26,22 @@ class MainWindow(QMainWindow):
         self.table = QTableWidget()
         self.table.setColumnCount(4)
         self.table.setHorizontalHeaderLabels(("Id", "Name", "Course", "Mobile"))
+        self.table.verticalHeader().setVisible(False)
         self.setCentralWidget(self.table)
 
     def load_data(self):
-        pass
+        connection = sqlite3.connect("database.db")
+        result = connection.execute("Select * from students")
+        self.table.setRowCount(0)
+        for row_number,row_data in enumerate(result):
+            self.table.insertRow(row_number)
+            for column_number, data in enumerate(row_data):
+                self.table.setItem(row_number,column_number,QTableWidgetItem(str(data)))
+        connection.close()
 
 
 app = QApplication(sys.argv)
-age_cal = MainWindow()
-age_cal.show()
+student_mgt = MainWindow()
+student_mgt.show()
+student_mgt.load_data()
 sys.exit(app.exec())
