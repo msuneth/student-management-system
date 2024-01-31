@@ -82,8 +82,10 @@ class MainWindow(QMainWindow):
         self.statusbar.addWidget(delete_button)
 
     def load_data(self):
-        connection = sqlite3.connect("database.db")
-        result = connection.execute("Select * from students")
+        connection = DatabaseConnection().connect()
+        cursor = connection.cursor()
+        cursor.execute("Select * from students")
+        result = cursor.fetchall()
         self.table.setRowCount(0)
         for row_number, row_data in enumerate(result):
             self.table.insertRow(row_number)
@@ -144,7 +146,7 @@ class DeleteDialog(QDialog):
 
         connection = DatabaseConnection().connect()
         cursor = connection.cursor()
-        cursor.execute("Delete from students where id=?",
+        cursor.execute("Delete from students where id=%s",
                        (student_id,))
         connection.commit()
         cursor.close()
@@ -206,7 +208,7 @@ class EditDialog(QDialog):
         mobile = self.mobile.text()
         connection = DatabaseConnection().connect()
         cursor = connection.cursor()
-        cursor.execute("Update students  set name=?, course=?, mobile=? where id=?",
+        cursor.execute("Update students  set name=%s, course=%s, mobile=%s where id=%s",
                        (name, course, mobile, self.student_id))
         connection.commit()
         cursor.close()
@@ -258,8 +260,8 @@ class InsertDialog(QDialog):
         mobile = self.mobile.text()
         connection = DatabaseConnection().connect()
         cursor = connection.cursor()
-        cursor.execute("Insert into students (name, course, mobile) values (?,?,?)",
-                       (name, course, mobile, self.student_))
+        cursor.execute("Insert into students (name, course, mobile) values (%s,%s,%s)",
+                       (name, course, mobile))
         connection.commit()
         cursor.close()
         connection.close()
@@ -291,8 +293,9 @@ class SearchDialog(QDialog):
         name = self.student_name.text()
         connection = DatabaseConnection().connect()
         cursor = connection.cursor()
-        result = cursor.execute("Select * from students where name = ?",
+        cursor.execute("Select * from students where name = %s",
                                 (name,))
+        result = cursor.fetchall()
         rows = list(result)
         print(rows)
         items = main_window.table.findItems(name, Qt.MatchFlag.MatchFixedString)
