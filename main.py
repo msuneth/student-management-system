@@ -6,15 +6,19 @@ from PyQt6.QtWidgets import (QApplication, QVBoxLayout, QLabel, QWidget,
                              QGridLayout, QLineEdit, QPushButton, QMainWindow, QTableWidget, QTableWidgetItem, QDialog,
                              QComboBox, QToolBar, QStatusBar, QMessageBox)
 import sys
-from datetime import datetime
+import mysql.connector
 
 
 class DatabaseConnection:
-    def __init__(self, database_file="database.db"):
-        self.database_file = database_file
+    def __init__(self, host="localhost", user="root", password="zaq1@WSX", database="school"):
+        self.host = host
+        self.user = user
+        self.password = password
+        self.database = database
 
     def connect(self):
-        connection = sqlite3.connect(self.database_file)
+        connection = mysql.connector.connect(host=self.host, user=self.user, password=self.password,
+                                             database=self.database)
         return connection
 
 
